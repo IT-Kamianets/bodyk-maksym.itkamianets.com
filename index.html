@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="uk" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Резюме — Олександр Мельник | Lead / Senior Full-Stack Engineer</title>
+  
+  <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            heading: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+            },
+            primary: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* Стилі для режиму редагування */
+    .is-editing .editable {
+      outline: 1.5px dashed rgba(99, 102, 241, 0.45);
+      outline-offset: 3px;
+      border-radius: 4px;
+      cursor: text;
+      transition: background-color 0.15s ease, outline-color 0.15s ease;
+    }
+    .is-editing .editable:hover {
+      background-color: rgba(99, 102, 241, 0.08);
+      outline-color: rgba(99, 102, 241, 0.9);
+    }
+    .is-editing .editable:focus {
+      outline: 2px solid #4f46e5 !important;
+      background-color: rgba(99, 102, 241, 0.12) !important;
+    }
+
+    /* Підсвічування пов'язаного досвіду при виборі навички */
+    .skill-highlighted {
+      animation: highlightPulse 1.8s ease-in-out infinite alternate;
+    }
+    @keyframes highlightPulse {
+      from {
+        box-shadow: 0 0 0 2px #4f46e5;
+        background-color: rgba(99, 102, 241, 0.15);
+      }
+      to {
+        box-shadow: 0 0 0 3px #10b981;
+        background-color: rgba(16, 185, 129, 0.2);
+      }
+    }
+
+    /* ========================================================
+       PRINT STYLESHEET (Друк та ідеальний експорт у PDF)
+       ======================================================== */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 10mm 12mm 10mm 12mm;
+      }
+      body {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        font-size: 11pt !important;
+        line-height: 1.35 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      /* Приховати всі панелі керування, тости, тулбари та кнопки дій */
+      .no-print,
+      #top-control-bar,
+      #edit-banner,
+      #toast-container,
+      .copy-btn,
+      .interactive-badge,
+      header,
+      footer {
+        display: none !important;
+      }
+      /* Налаштування основного аркуша резюме */
+      #resume-paper {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        background: transparent !important;
+      }
+      /* Запобігання розриву карток на дві сторінки */
+      .avoid-page-break {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      .editable {
+        outline: none !important;
+        background: transparent !important;
+      }
+      a {
+        text-decoration: none !important;
+        color: inherit !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 dark:bg-slate-950 dark:text-slate-100 font-sans transition-colors duration-200 antialiased selection:bg-primary-500 selection:text-white pb-16">
+
+  <!-- ==================== TOAST NOTIFICATIONS ==================== -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2.5 pointer-events-none no-print"></div>
+
+  <!-- ==================== TOP RECRUITER UTILITY BAR ==================== -->
+  <aside id="top-control-bar" class="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm no-print">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+      
+      <!-- Left: Status indicator & mode badge -->
+      <div class="flex items-center gap-3">
+        <span class="relative flex h-2.5 w-2.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+        </span>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+          <span class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">Web-Резюме</span>
+          <span class="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:inline">• Готове для рекрутера</span>
+        </div>
+      </div>
+
+      <!-- Right: Action Buttons -->
+      <div class="flex items-center gap-2 sm:gap-2.5">
+        
+        <!-- Edit Mode Toggle Button -->
+        <button id="toggle-edit-btn" onclick="toggleEditMode()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all border border-slate-200 dark:border-slate-700">
+          <i data-lucide="edit-3" class="w-3.5 h-3.5 text-primary-600 dark:text-primary-400"></i>
+          <span id="edit-btn-text">Редагувати дані</span>
+        </button>
+
+        <!-- Save Button (appears when editing) -->
+        <button id="save-data-btn" onclick="saveResumeData()" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-all">
+          <i data-lucide="check" class="w-3.5 h-3.5"></i>
+          <span>Зберегти</span>
+        </button>
+
+        <!-- Reset Button (appears when editing) -->
+        <button id="reset-data-btn" onclick="resetResumeData()" class="hidden items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all" title="Скинути до зразка">
+          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+        </button>
+
+        <!-- Download vCard (.vcf) -->
+        <button onclick="downloadVCard()" class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all border border-slate-200 dark:border-slate-700" title="Додати контакт у телефон">
+          <i data-lucide="contact" class="w-3.5 h-3.5"></i>
+          <span>vCard</span>
+        </button>
+
+        <!-- Print / PDF Button -->
+        <button onclick="printResume()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-primary-600 hover:bg-primary-700 text-white shadow-sm hover:shadow transition-all">
+          <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+          <span>Друк / PDF</span>
+        </button>
+
+        <!-- Dark / Light Theme Toggle -->
+        <button id="theme-btn" onclick="toggleTheme()" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Змінити тему">
+          <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+          <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+        </button>
+
+      </div>
+    </div>
+  </aside>
+
+  <!-- Edit Mode Banner Notice (Appears only during Edit Mode) -->
+  <div id="edit-banner" class="hidden bg-gradient-to-r from-primary-600 to-indigo-700 text-white text-xs py-2 px-4 text-center font-medium shadow-inner no-print">
+    <div class="max-w-5xl mx-auto flex items-center justify-center gap-2">
+      <i data-lucide="info" class="w-4 h-4 shrink-0"></i>
+      <span><strong>Режим редагування активний:</strong> Клікніть на будь-яке поле чи текст, щоб внести свої дані, після чого натисніть кнопку «Зберегти».</span>
+    </div>
+  </div>
+
+  <!-- ==================== MAIN RESUME CANVAS (A4-PROPORTION SHEET) ==================== -->
+  <main class="max-w-4xl mx-auto px-3 sm:px-6 pt-6 sm:pt-10">
+    <div id="resume-paper" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-3xl sm:rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none p-6 sm:p-12 transition-all">
+      
+      <!-- ==================== HEADER SECTION ==================== -->
+      <section class="border-b border-slate-200 dark:border-slate-800 pb-8 sm:pb-10 avoid-page-break">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          
+          <!-- Avatar + Candidate Target Info -->
+          <div class="flex items-center gap-5">
+            <!-- Modern Photo / Initials Avatar -->
+            <div class="relative shrink-0">
+              <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-tr from-slate-900 to-primary-700 text-white flex items-center justify-center font-heading font-extrabold text-2xl sm:text-3xl shadow-md border-2 border-white dark:border-slate-800">
+                БМ
+              </div>
+              <span class="absolute -bottom-1 -right-1 p-1 bg-white dark:bg-slate-900 rounded-full">
+                <span class="block w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900" title="Доступний до роботи"></span>
+              </span>
+            </div>
+
+            <!-- Name, Target Role, Badges -->
+            <div>
+              <div class="flex flex-wrap items-center gap-2 mb-1">
+                <h1 id="candidate-name" class="editable font-heading text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                  Бодик Максим
+                </h1>
+              </div>
+
+              <div id="candidate-role" class="editable text-base sm:text-lg font-semibold text-primary-600 dark:text-primary-400 mb-2">
+                Middle+ / Strong Middle Full-Stack Engineer
+              </div>
+
+              <!-- Badges -->
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  <span class="editable">Open to Offers</span>
+                </span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                  <i data-lucide="laptop" class="w-3 h-3 text-slate-500"></i>
+                  <span class="editable">Remote / Kyiv / Hybrid</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Contacts Panel -->
+          <div class="w-full sm:w-auto bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-slate-800 text-xs space-y-2.5 shrink-0">
+            <!-- Email -->
+            <div class="flex items-center justify-between gap-4 group">
+              <div class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                <i data-lucide="mail" class="w-3.5 h-3.5 text-primary-600 dark:text-primary-400"></i>
+                <a href="mailto:kn1b24.bodyk@kpnu.edu.ua" id="contact-email" class="editable font-medium hover:underline">kn1b24.bodyk@kpnu.edu.ua</a>
+              </div>
+              <button onclick="copyField('contact-email', 'Email скопійовано!')" class="copy-btn text-slate-400 hover:text-primary-600 p-0.5" title="Скопіювати">
+                <i data-lucide="copy" class="w-3 h-3"></i>
+              </button>
+            </div>
+
+            <!-- Phone -->
+            <div class="flex items-center justify-between gap-4 group">
+              <div class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                <i data-lucide="phone" class="w-3.5 h-3.5 text-primary-600 dark:text-primary-400"></i>
+                <a href="tel:+380678646568" id="contact-phone" class="editable font-medium hover:underline">+38 (067) 864-65-68</a>
+              </div>
+              <button onclick="copyField('contact-phone', 'Номер телефону скопійовано!')" class="copy-btn text-slate-400 hover:text-primary-600 p-0.5" title="Скопіювати">
+                <i data-lucide="copy" class="w-3 h-3"></i>
+              </button>
+            </div>
+
+            <!-- Telegram -->
+            <div class="flex items-center justify-between gap-4 group">
+              <div class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                <i data-lucide="send" class="w-3.5 h-3.5 text-sky-500"></i>
+                <a href="https://t.me/riliphicx" target="_blank" rel="noopener noreferrer" id="contact-tg" class="editable font-medium hover:underline">t.me/riliphicx</a>
+              </div>
+              <button onclick="copyField('contact-tg', 'Telegram нік скопійовано!')" class="copy-btn text-slate-400 hover:text-sky-500 p-0.5" title="Скопіювати">
+                <i data-lucide="copy" class="w-3 h-3"></i>
+              </button>
+            </div>
+
+            <!-- LinkedIn & GitHub links -->
+            <div class="flex items-center justify-between gap-4 pt-1 border-t border-slate-200 dark:border-slate-700/60 font-medium">
+              <div class="flex items-center gap-3">
+                <a href="https://linkedin.com" target="_blank" class="flex items-center gap-1 text-slate-700 dark:text-slate-300 hover:text-primary-600">
+                  <i data-lucide="linkedin" class="w-3 h-3 text-blue-600"></i>
+                  <span>LinkedIn</span>
+                </a>
+                <span class="text-slate-300 dark:text-slate-700">•</span>
+                <a href="https://github.com/SakuraByte" target="_blank" class="flex items-center gap-1 text-slate-700 dark:text-slate-300 hover:text-primary-600">
+                  <i data-lucide="github" class="w-3 h-3"></i>
+                  <span>GitHub</span>
+                </a>
+              </div>
+              <span class="text-[11px] text-slate-400 flex items-center gap-1">
+                <i data-lucide="map-pin" class="w-3 h-3"></i>
+                <span class="editable">Хмельницький</span>
+              </span>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==================== EXECUTIVE SUMMARY ==================== -->
+      <section class="py-7 border-b border-slate-200 dark:border-slate-800 avoid-page-break">
+        <h2 class="text-xs uppercase tracking-widest font-bold text-slate-400 dark:text-slate-500 mb-3 flex items-center gap-2">
+          <i data-lucide="user-check" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i>
+          <span>Професійне резюме (Executive Summary)</span>
+        </h2>
+        <p class="editable text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed font-normal">
+          Full-Stack інженер із <strong>3+ роками комерційного досвіду</strong> в продуктових e-commerce, фінтех та логістичних екосистемах України (<strong>Nova Digital / Нова пошта</strong>, <strong>ROZETKA</strong>, <strong>EVO / Prom.ua</strong>). Спеціалізуюся на побудові високонавантажених клієнтських кабінетів та мікросервісів (React, Next.js, Node.js, TypeScript, PostgreSQL, Redis). Практичний досвід інтеграції локальних платіжних систем (Monobank Acquiring, LiqPay, NovaPay), оптимізації швидкодії веб-інтерфейсів та проєктування стійких REST/WebSocket API з показником доступності 99.9%.
+        </p>
+      </section>
+
+      <!-- ==================== CORE SKILLS & TECH STACK ==================== -->
+      <section class="py-7 border-b border-slate-200 dark:border-slate-800 avoid-page-break">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-xs uppercase tracking-widest font-bold text-slate-400 dark:text-slate-500 flex items-center gap-2">
+            <i data-lucide="code-2" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i>
+            <span>Ключові компетенції та стек</span>
+          </h2>
+          <span class="text-[11px] text-slate-400 italic no-print hidden sm:inline">Клікніть на навичку для підсвічування в досвіді</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          
+          <!-- Category 1 -->
+          <div class="bg-slate-50 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-200/70 dark:border-slate-800">
+            <div class="text-xs font-bold text-slate-900 dark:text-white mb-2.5 flex items-center gap-1.5">
+              <i data-lucide="layers" class="w-3.5 h-3.5 text-primary-600"></i>
+              <span>Frontend & UI</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 text-xs">
+              <button onclick="highlightSkill('TypeScript')" class="skill-tag px-2 py-1 rounded-md bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium border border-slate-200 dark:border-slate-700 hover:border-primary-500 transition-colors">TypeScript</button>
+              <button onclick="highlightSkill('React')" class="skill-tag px-2 py-1 rounded-md bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium border border-slate-200 dark:border-slate-700 hover:border-primary-500 transition-colors">React</button>
+              <button onclick="highlightSkill('Next.js')" class="skill-tag px-2 py-1 rounded-md bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium border border-slate-200 dark:border-slate-700 hover:border-primary-500 transition-colors">Next.js</button>
+              <button onclick="highlightSkill('Tailwind')" class="skill-tag px-2 py-1 rounded-md bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium border border-slate-200 dark:border-slate-700 hover:border-primary-500 transition-colors">Tailwind CSS</button>
+              <button onclick="highlightSkill('Zustand')" class="skill-tag px-2 py-1 rounded-md bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium border border-slate-200 dark:border-slate-700 hover:border-primary-500 transition-colors">Zustand / Redux</button>
+              <button onclick="highlightSkill('WebSocket')" class="skill-tag px-2 py-1 rounded-md bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium border border-slate-200 dark:border-slate-700 hover:border-primary-500 transition-colors">WebSockets</button>
+            </div>
+          </div>
+
+          <!-- Category 2 -->
+          <div class="bg-slate-50 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-200/70 dark:border-slate-800">
+            <div class="text-xs font-bold text-slate-900 dark:text-white mb-2.5 flex items-center gap-1.5">
+              <i data-lucide="server" class="w-3.5 h-3.5 text-emerald-600"></i>
+              <span>Backend, DB & High-Load</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 text-xs">
+              <button onclick="highlightSkill('Node.js')" class="skill-tag px-2 py-1 rounded-md bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium border border-slate-200 dark:border-slate-700 hover:border-emerald-500 transition-colors">Node.js (NestJS)</button>
+              <button onclick="highlightSkill('PostgreSQL')" class="skill-tag px-2 py-1 rounded-md bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium border border-slate-200 dark:border-slate-700 hover:border-emerald-500 transition-colors">PostgreSQL</button>
+              <button onclick="highlightSkill('Redis')" class="skill-tag px-2 py-1 rounded-md bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium border border-slate-200 dark:border-slate-700 hover:border-emerald-500 transition-colors">Redis Cache</button>
+              <button onclick="highlightSkill('Prisma')" class="skill-tag px-2 py-1 rounded-md bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium border border-slate-200 dark:border-slate-700 hover:border-emerald-500 transition-colors">Prisma / Drizzle</button>
+              <button onclick="highlightSkill('REST')" class="skill-tag px-2 py-1 rounded-md bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium border border-slate-200 dark:border-slate-700 hover:border-emerald-500 transition-colors">RESTful / GraphQL</button>
+              <button onclick="highlightSkill('Go')" class="skill-tag px-2 py-1 rounded-md bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium border border-slate-200 dark:border-slate-700 hover:border-emerald-500 transition-colors">Go (Microservices)</button>
+            </div>
+          </div>
+
+          <!-- Category 3 -->
+          <div class="bg-slate-50 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-200/70 dark:border-slate-800">
+            <div class="text-xs font-bold text-slate-900 dark:text-white mb-2.5 flex items-center gap-1.5">
+              <i data-lucide="cloud-cog" class="w-3.5 h-3.5 text-purple-600"></i>
+              <span>Cloud, DevOps & Management</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 text-xs">
+              <button onclick="highlightSkill('Docker')" class="skill-tag px-2 py-1 rounded-md bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium border border-slate-200 dark:border-slate-700 hover:border-purple-500 transition-colors">Docker</button>
+              <button onclick="highlightSkill('AWS')" class="skill-tag px-2 py-1 rounded-md bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium border border-slate-200 dark:border-slate-700 hover:border-purple-500 transition-colors">AWS (S3, ECS, RDS)</button>
+              <button onclick="highlightSkill('CI/CD')" class="skill-tag px-2 py-1 rounded-md bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium border border-slate-200 dark:border-slate-700 hover:border-purple-500 transition-colors">GitHub Actions (CI/CD)</button>
+              <button onclick="highlightSkill('System Design')" class="skill-tag px-2 py-1 rounded-md bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium border border-slate-200 dark:border-slate-700 hover:border-purple-500 transition-colors">System Design</button>
+              <button onclick="highlightSkill('Scrum')" class="skill-tag px-2 py-1 rounded-md bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium border border-slate-200 dark:border-slate-700 hover:border-purple-500 transition-colors">Team Mentorship / Scrum</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==================== WORK EXPERIENCE ==================== -->
+      <section class="py-7 border-b border-slate-200 dark:border-slate-800">
+        <h2 class="text-xs uppercase tracking-widest font-bold text-slate-400 dark:text-slate-500 mb-6 flex items-center gap-2">
+          <i data-lucide="briefcase" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i>
+          <span>Досвід роботи (Work Experience — 3 роки в українському Tech)</span>
+        </h2>
+
+        <div class="space-y-8">
+          
+          <!-- Experience Item 1: Nova Digital (Нова пошта) -->
+          <div class="avoid-page-break experience-block" data-keywords="TypeScript,Node.js,Next.js,PostgreSQL,Redis,Docker,REST,CI/CD">
+            <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 mb-2">
+              <div>
+                <h3 class="editable font-heading text-lg font-bold text-slate-900 dark:text-white">
+                  Strong Middle Full-Stack Developer
+                </h3>
+                <div class="editable text-sm font-semibold text-primary-600 dark:text-primary-400">
+                  Nova Digital (Група компаній NOVA / Нова пошта) • Логістична екосистема & B2B кабінет
+                </div>
+              </div>
+              <div class="editable text-xs font-semibold text-slate-500 dark:text-slate-400 sm:text-right">
+                Квітень 2024 — теперішній час | Київ / Remote
+              </div>
+            </div>
+
+            <!-- Duties -->
+            <p class="editable text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-3 leading-relaxed">
+              Розробка веб-інтерфейсів та бекенд-сервісів для особистого бізнес-кабінету відправника та публічного сервісу відстеження відправлень із навантаженням у мільйони запитів щодня.
+            </p>
+
+            <!-- Key Achievements Box (Measurable Impact) -->
+            <div class="bg-emerald-50/70 dark:bg-emerald-950/20 border border-emerald-200/80 dark:border-emerald-800/40 rounded-xl p-3.5 mb-3 text-xs sm:text-sm">
+              <span class="font-bold text-emerald-800 dark:text-emerald-400 block mb-1.5 flex items-center gap-1.5">
+                <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
+                Ключові вимірювані результати:
+              </span>
+              <ul class="space-y-1 text-slate-700 dark:text-slate-300 list-disc list-inside">
+                <li class="editable">Знизив час первинного завантаження сторінки формування реєстрів та ТТН на <strong>38%</strong> завдяки переходу на SSR у Next.js та оптимізації кешування стану.</li>
+                <li class="editable">Реалізував модуль масової онлайн-оплати послуг доставки через NovaPay та банківські еквайринги, зменшивши кількість відхилених сесій на <strong>24%</strong>.</li>
+                <li class="editable">Налаштував обробку черг статусів посилок (Redis + BullMQ), що забезпечило стабільну роботу системи під час пікових навантажень (Black Friday / свята) без падіння latency.</li>
+              </ul>
+            </div>
+
+            <!-- Tags -->
+            <div class="flex flex-wrap gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
+              <span class="exp-tech-tag px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">TypeScript</span>
+              <span class="exp-tech-tag px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">Next.js</span>
+              <span class="exp-tech-tag px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">Node.js (NestJS)</span>
+              <span class="exp-tech-tag px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">PostgreSQL</span>
+              <span class="exp-tech-tag px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">Redis</span>
+              <span class="exp-tech-tag px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">Docker</span>
+              <span class="exp-tech-tag px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">CI/CD</span>
+            </div>
+          </div>
+
+          <!-- Experience Item 2: Rozetka -->
+          <div class="avoid-page-break experience-block" data-keywords="React,TypeScript,Tailwind,REST,PostgreSQL,Redis,Zustand">
+            <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 mb-2">
+              <div>
+                <h3 class="editable font-heading text-lg font-bold text-slate-900 dark:text-white">
+                  Middle Full-Stack Developer
+                </h3>
+                <div class="editable text-sm font-semibold text-primary-600 dark:text-primary-400">
+                  ROZETKA (ТОВ «Розетка.Укр») • Найбільший e-commerce маркетплейс України
+                </div>
+              </div>
+              <div class="editable text-xs font-semibold text-slate-500 dark:text-slate-400 sm:text-right">
+                Травень 2023 — Березень 2024 | Київ / Remote
+              </div>
+            </div>
+
+            <p class="editable text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-3 leading-relaxed">
+              Розвиток кабінету мерчанта (Seller Portal) та модулів оформлення замовлення: керування каталогом товарів, аналітика продажів та швидка оплата замовлень.
+            </p>
+
+            <div class="bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 rounded-xl p-3.5 mb-3 text-xs sm:text-sm">
+              <span class="font-bold text-slate-800 dark:text-slate-200 block mb-1.5 flex items-center gap-1.5">
+                <i data-lucide="award" class="w-3.5 h-3.5 text-primary-600"></i>
+                Ключові результати:
+              </span>
+              <ul class="space-y-1 text-slate-700 dark:text-slate-300 list-disc list-inside">
+                <li class="editable">Оптимізував фоновий імпорт прайс-листів (XML / Excel) для продавців: час обробки файлів на 50 000+ SKU скоротився в <strong>2.2 рази</strong>.</li>
+                <li class="editable">Інтегрував API оплати частинами від Monobank та ПриватБанк у чекаут партнерських магазинів, підвищивши конверсію завершених купівель на <strong>11%</strong>.</li>
+                <li class="editable">Перевів компоненти фільтрації та таблиць замовлень на React + Tailwind CSS із типізацією в TypeScript, скоротивши обсяг багів на 30%.</li>
+              </ul>
+            </div>
+
+            <div class="flex flex-wrap gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
+              <span class="exp-tech-tag px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">React</span>
+              <span class="exp-tech-tag px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">TypeScript</span>
+              <span class="exp-tech-tag px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">Tailwind CSS</span>
+              <span class="exp-tech-tag px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">Node.js</span>
+              <span class="exp-tech-tag px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">PostgreSQL</span>
+              <span class="exp-tech-tag px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">Zustand</span>
+            </div>
+          </div>
+
+          <!-- Experience Item 3: EVO / Prom.ua -->
+          <div class="avoid-page-break experience-block" data-keywords="JavaScript,TypeScript,React,Node.js,PostgreSQL,WebSocket,REST">
+            <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 mb-2">
+              <div>
+                <h3 class="editable font-heading text-lg font-bold text-slate-900 dark:text-white">
+                  Junior+ / Middle Web Developer
+                </h3>
+                <div class="editable text-sm font-semibold text-primary-600 dark:text-primary-400">
+                  EVO (Prom.ua / Zakupki.Prom) • Платформа e-commerce та B2B маркетплейсів
+                </div>
+              </div>
+              <div class="editable text-xs font-semibold text-slate-500 dark:text-slate-400 sm:text-right">
+                Лютий 2022 — Квітень 2023 | Київ / Remote
+              </div>
+            </div>
+
+            <p class="editable text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-2 leading-relaxed">
+              Участь у розробці клієнтських компонентів маркетплейсу Prom.ua, розробка чату між покупцями і продавцями та оптимізація форм оформлення замовлень.
+            </p>
+
+            <div class="bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 rounded-xl p-3.5 mb-3 text-xs sm:text-sm">
+              <span class="font-bold text-slate-800 dark:text-slate-200 block mb-1.5 flex items-center gap-1.5">
+                <i data-lucide="award" class="w-3.5 h-3.5 text-primary-600"></i>
+                Ключові результати:
+              </span>
+              <ul class="space-y-1 text-slate-700 dark:text-slate-300 list-disc list-inside">
+                <li class="editable">Розробив модуль live-чатів між покупцем та магазином із миттєвими сповіщеннями на базі <strong>WebSockets</strong>.</li>
+                <li class="editable">Реалізував автокомпліт відділень та поштоматів поштових операторів у чекауті, скоротивши час оформлення замовлення клієнтом на <strong>20%</strong>.</li>
+                <li class="editable">Покрив модульні сервіси тестами (Jest/React Testing Library), підвищивши тестове покриття бізнес-логіки до 75%.</li>
+              </ul>
+            </div>
+
+            <div class="flex flex-wrap gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
+              <span class="exp-tech-tag px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">React</span>
+              <span class="exp-tech-tag px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">JavaScript (ES6+)</span>
+              <span class="exp-tech-tag px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">Node.js</span>
+              <span class="exp-tech-tag px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">WebSocket</span>
+              <span class="exp-tech-tag px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">PostgreSQL</span>
+              <span class="exp-tech-tag px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">REST API</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==================== EDUCATION & CERTIFICATIONS ==================== -->
+      <section class="py-7 border-b border-slate-200 dark:border-slate-800 avoid-page-break">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          <!-- Education Column -->
+          <div>
+            <h2 class="text-xs uppercase tracking-widest font-bold text-slate-400 dark:text-slate-500 mb-4 flex items-center gap-2">
+              <i data-lucide="graduation-cap" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i>
+              <span>Освіта (Education)</span>
+            </h2>
+            <div class="space-y-3">
+              <div>
+                <h4 class="editable font-bold text-sm text-slate-900 dark:text-white">Бакалавр комп'ютерних наук</h4>
+                <div class="editable text-xs font-medium text-slate-600 dark:text-slate-400">Кам'янець-Подільський національний університет імені Івана Огієнка (КПНУ)</div>
+                <div class="editable text-[11px] text-slate-400">2021 — 2025 | Факультет фізико-математичний, Інформатика та комп'ютерні науки</div>
+              </div>
+              <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+                <h4 class="editable font-bold text-sm text-slate-900 dark:text-white">Поглиблені курси розробки веб-додатків</h4>
+                <div class="editable text-xs font-medium text-slate-600 dark:text-slate-400">Frontend & Backend Software Engineering (Node.js, React, Architecture)</div>
+                <div class="editable text-[11px] text-slate-400">2021 — 2022 | Сертифіковані програми</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Certifications Column -->
+          <div>
+            <h2 class="text-xs uppercase tracking-widest font-bold text-slate-400 dark:text-slate-500 mb-4 flex items-center gap-2">
+              <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
+              <span>Сертифікати та підвищення (Certifications)</span>
+            </h2>
+            <div class="space-y-3 text-xs">
+              <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/70 dark:border-slate-800">
+                <div class="editable font-bold text-slate-900 dark:text-white">AWS Certified Cloud Practitioner</div>
+                <div class="editable text-slate-500 text-[11px]">Amazon Web Services • Cloud Architecture & Infrastructure</div>
+              </div>
+              <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/70 dark:border-slate-800">
+                <div class="editable font-bold text-slate-900 dark:text-white">Full-Stack TypeScript Professional</div>
+                <div class="editable text-slate-500 text-[11px]">NestJS, React & Microservices Pattern Mastery</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==================== LANGUAGES & WORK PREFERENCES ==================== -->
+      <section class="pt-7 avoid-page-break">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          <!-- Languages with Visual Bars -->
+          <div>
+            <h2 class="text-xs uppercase tracking-widest font-bold text-slate-400 dark:text-slate-500 mb-4 flex items-center gap-2">
+              <i data-lucide="globe" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i>
+              <span>Мови (Languages)</span>
+            </h2>
+            <div class="space-y-3 text-xs">
+              <!-- Ukrainian -->
+              <div>
+                <div class="flex justify-between font-semibold mb-1">
+                  <span class="editable text-slate-800 dark:text-slate-200">Українська</span>
+                  <span class="editable text-slate-500">Рідна / Вільно (Native)</span>
+                </div>
+                <div class="w-full h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                  <div class="h-full bg-primary-600 rounded-full w-full"></div>
+                </div>
+              </div>
+
+              <!-- English -->
+              <div>
+                <div class="flex justify-between font-semibold mb-1">
+                  <span class="editable text-slate-800 dark:text-slate-200">Англійська (English)</span>
+                  <span class="editable text-primary-600 dark:text-primary-400 font-bold">B2 — Upper-Intermediate (Tech & Speaking)</span>
+                </div>
+                <div class="w-full h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                  <div class="h-full bg-primary-600 rounded-full w-[75%]"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Work Preferences / Additional Info -->
+          <div>
+            <h2 class="text-xs uppercase tracking-widest font-bold text-slate-400 dark:text-slate-500 mb-4 flex items-center gap-2">
+              <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
+              <span>Умови співпраці (Preferences)</span>
+            </h2>
+            <ul class="space-y-2 text-xs text-slate-600 dark:text-slate-300">
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500 shrink-0"></i>
+                <span class="editable"><strong>Формат:</strong> Віддалено (Remote) або гібрид (Хмельницький / Київ).</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500 shrink-0"></i>
+                <span class="editable"><strong>Позиції:</strong> Middle+ / Strong Middle Full-Stack Engineer, Frontend/Backend Dev.</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500 shrink-0"></i>
+                <span class="editable"><strong>Оформлення:</strong> ФОП (3 група) / Дія.City / B2B контракт.</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500 shrink-0"></i>
+                <span class="editable"><strong>Готовність до старту:</strong> 1–2 тижні після оферу.</span>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+  <script>
+    // 1. Initialize Lucide Icons
+    lucide.createIcons();
+
+    // 2. State & Elements
+    let isEditing = false;
+    const resumePaper = document.getElementById('resume-paper');
+    const toggleEditBtn = document.getElementById('toggle-edit-btn');
+    const editBtnText = document.getElementById('edit-btn-text');
+    const saveBtn = document.getElementById('save-data-btn');
+    const resetBtn = document.getElementById('reset-data-btn');
+    const editBanner = document.getElementById('edit-banner');
+
+    // 3. Load Saved Resume from LocalStorage (if any)
+    window.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      const savedHtml = localStorage.getItem('user_custom_resume_html');
+      if (savedHtml) {
+        resumePaper.innerHTML = savedHtml;
+        lucide.createIcons();
+        showToast('Завантажено ваші збережені зміни резюме', 'info');
+      }
+    });
+
+    // 4. Toggle Edit Mode (Killer Feature)
+    function toggleEditMode() {
+      isEditing = !isEditing;
+      const editableElements = resumePaper.querySelectorAll('.editable');
+
+      if (isEditing) {
+        resumePaper.classList.add('is-editing');
+        editableElements.forEach(el => el.setAttribute('contenteditable', 'true'));
+        editBtnText.textContent = 'Завершити редагування';
+        saveBtn.classList.remove('hidden');
+        saveBtn.classList.add('inline-flex');
+        resetBtn.classList.remove('hidden');
+        resetBtn.classList.add('inline-flex');
+        editBanner.classList.remove('hidden');
+        showToast('Режим редагування увімкнено! Клікніть на будь-який текст.', 'info');
+      } else {
+        resumePaper.classList.remove('is-editing');
+        editableElements.forEach(el => el.removeAttribute('contenteditable'));
+        editBtnText.textContent = 'Редагувати дані';
+        saveBtn.classList.add('hidden');
+        saveBtn.classList.remove('inline-flex');
+        resetBtn.classList.add('hidden');
+        resetBtn.classList.remove('inline-flex');
+        editBanner.classList.add('hidden');
+      }
+      lucide.createIcons();
+    }
+
+    // 5. Save Customized Resume Data to LocalStorage
+    function saveResumeData() {
+      // Temporarily remove contenteditable before snapshot
+      const editableElements = resumePaper.querySelectorAll('.editable');
+      editableElements.forEach(el => el.removeAttribute('contenteditable'));
+      
+      localStorage.setItem('user_custom_resume_html', resumePaper.innerHTML);
+      
+      // restore attribute if still in editing state
+      if (isEditing) {
+        editableElements.forEach(el => el.setAttribute('contenteditable', 'true'));
+      }
+
+      showToast('Всі персональні дані успішно збережено в браузері!');
+    }
+
+    // 6. Reset to Default Template
+    function resetResumeData() {
+      localStorage.removeItem('user_custom_resume_html');
+      showToast('Відновлено початковий зразок резюме', 'info');
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    }
+
+    // 7. Print to PDF Functionality
+    function printResume() {
+      // Turn off editing highlights if active
+      if (isEditing) {
+        toggleEditMode();
+      }
+      showToast('Підготовка сторінки до друку / PDF...');
+      setTimeout(() => {
+        window.print();
+      }, 300);
+    }
+
+    // 8. Copy to Clipboard Helper
+    function copyField(elementId, successMsg) {
+      const el = document.getElementById(elementId);
+      const text = el ? (el.innerText || el.textContent) : '';
+      
+      const tempInput = document.createElement('textarea');
+      tempInput.value = text.trim();
+      tempInput.setAttribute('readonly', '');
+      tempInput.style.position = 'absolute';
+      tempInput.style.left = '-9999px';
+      document.body.appendChild(tempInput);
+      tempInput.select();
+
+      try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+          showToast(successMsg || 'Скопійовано!');
+        } else {
+          showToast('Помилка копіювання', 'error');
+        }
+      } catch (err) {
+        showToast('Не вдалося скопіювати', 'error');
+      }
+      document.body.removeChild(tempInput);
+    }
+
+    // 9. Generate & Download vCard (.vcf)
+    function downloadVCard() {
+      const name = document.getElementById('candidate-name').innerText.trim() || 'Бодик Максим';
+      const email = document.getElementById('contact-email').innerText.trim() || 'kn1b24.bodyk@kpnu.edu.ua';
+      const phone = document.getElementById('contact-phone').innerText.trim() || '+380678646568';
+      const role = document.getElementById('candidate-role').innerText.trim() || 'Strong Middle Full-Stack Developer';
+
+      const vCardContent = [
+        'BEGIN:VCARD',
+        'VERSION:3.0',
+        `FN:${name}`,
+        `TITLE:${role}`,
+        `TEL;TYPE=CELL:${phone}`,
+        `EMAIL;TYPE=WORK:${email}`,
+        'NOTE:Збережено з веб-резюме',
+        'END:VCARD'
+      ].join('\r\n');
+
+      const blob = new Blob([vCardContent], { type: 'text/vcard;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${name.replace(/\s+/g, '_')}_CV.vcf`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      showToast('Контактну картку (vCard) завантажено!');
+    }
+
+    // 10. Interactive Skill Highlighter in Work Experience
+    function highlightSkill(skillName) {
+      const expBlocks = document.querySelectorAll('.experience-block');
+      let matchedCount = 0;
+
+      // Reset existing highlights
+      document.querySelectorAll('.skill-highlighted').forEach(el => el.classList.remove('skill-highlighted'));
+
+      expBlocks.forEach(block => {
+        const keywords = block.getAttribute('data-keywords') || '';
+        const tags = block.querySelectorAll('.exp-tech-tag');
+        
+        tags.forEach(tag => {
+          if (tag.textContent.toLowerCase().includes(skillName.toLowerCase())) {
+            tag.classList.add('skill-highlighted');
+            matchedCount++;
+          }
+        });
+      });
+
+      if (matchedCount > 0) {
+        showToast(`Знайдено ${matchedCount} згадок навички «${skillName}» у досвіді`);
+      } else {
+        showToast(`Навичка «${skillName}» входить до загального стеку`);
+      }
+
+      // Auto clear after 4 seconds
+      setTimeout(() => {
+        document.querySelectorAll('.skill-highlighted').forEach(el => el.classList.remove('skill-highlighted'));
+      }, 4000);
+    }
+
+    // 11. Toast System
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      
+      let bgStyle = 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-700';
+      let icon = 'check-circle';
+
+      if (type === 'error') {
+        bgStyle = 'bg-rose-600 text-white border-rose-500';
+        icon = 'alert-circle';
+      } else if (type === 'info') {
+        bgStyle = 'bg-primary-600 text-white border-primary-500';
+        icon = 'info';
+      }
+
+      toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-2.5 rounded-xl shadow-xl text-xs font-medium border backdrop-blur-md transition-all transform duration-300 translate-y-3 opacity-0 ${bgStyle}`;
+      toast.innerHTML = `<i data-lucide="${icon}" class="w-4 h-4 shrink-0"></i><span>${message}</span>`;
+      container.appendChild(toast);
+      lucide.createIcons();
+
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-3', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3200);
+    }
+
+    // 12. Theme Management
+    function initTheme() {
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      lucide.createIcons();
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.theme = isDark ? 'dark' : 'light';
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>
