@@ -183,6 +183,12 @@
           <span>Друк / PDF</span>
         </button>
 
+        <!-- 404 Error Page Link -->
+        <a href="404.html" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all border border-slate-200 dark:border-slate-700" title="Сторінка помилки 404">
+          <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-amber-500"></i>
+          <span>404</span>
+        </a>
+
         <!-- Dark / Light Theme Toggle -->
         <button id="theme-btn" onclick="toggleTheme()" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Змінити тему">
           <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
@@ -633,6 +639,15 @@
     </div>
   </main>
 
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="max-w-5xl mx-auto px-4 sm:px-6 pt-8 pb-6 text-center text-xs text-slate-500 dark:text-slate-400 no-print flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-200/80 dark:border-slate-800/80 mt-10">
+    <p>© 2026 Бодик Максим • Web-Резюме</p>
+    <div class="flex items-center gap-4">
+      <a href="404.html" class="hover:text-primary-600 dark:hover:text-primary-400 underline decoration-slate-300 dark:decoration-slate-700">Сторінка 404</a>
+      <button onclick="redirectTo404('Тестова симуляція помилки переходу')" class="text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 underline decoration-rose-300 dark:decoration-rose-800">Симуляція помилки</button>
+    </div>
+  </footer>
+
   <!-- ==================== JAVASCRIPT LOGIC ==================== -->
   <script>
     // 1. Initialize Lucide Icons
@@ -858,6 +873,51 @@
       localStorage.theme = isDark ? 'dark' : 'light';
       lucide.createIcons();
     }
+
+    // 13. Обробка помилок та зв'язок з 404.html
+    function redirectTo404(reason) {
+      const url = '404.html' + (reason ? '?reason=' + encodeURIComponent(reason) : '');
+      window.location.href = url;
+    }
+
+    // Перевірка коректності маршруту / хешу / параметрів
+    function validateRoute() {
+      // Якщо в URL вказано неіснуючий якір / id
+      if (window.location.hash && window.location.hash !== '#') {
+        const targetId = window.location.hash.substring(1);
+        const targetEl = document.getElementById(targetId) || document.querySelector(window.location.hash);
+        if (!targetEl) {
+          redirectTo404('Розділ "' + window.location.hash + '" не існує на цій сторінці');
+        }
+      }
+      // Якщо передано параметр помилки в адресному рядку
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('error')) {
+        redirectTo404(urlParams.get('error') || 'Помилка завантаження ресурсу');
+      }
+    }
+
+    window.addEventListener('hashchange', validateRoute);
+    window.addEventListener('DOMContentLoaded', validateRoute);
+
+    // Перехоплення кліків на посилання з битими/неіснуючими якорями
+    document.addEventListener('click', (e) => {
+      const link = e.target.closest('a');
+      if (!link) return;
+      const href = link.getAttribute('href');
+      if (href && href.startsWith('#') && href.length > 1) {
+        try {
+          const target = document.querySelector(href);
+          if (!target) {
+            e.preventDefault();
+            redirectTo404('Розділ "' + href + '" не знайдено');
+          }
+        } catch (err) {
+          e.preventDefault();
+          redirectTo404('Невірний формат навігаційного посилання: ' + href);
+        }
+      }
+    });
   </script>
 </body>
 </html>

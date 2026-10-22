@@ -49,7 +49,7 @@
 
   <!-- Top Bar -->
   <header class="w-full max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-    <a href="/" class="flex items-center gap-2 text-slate-900 dark:text-white font-heading font-bold text-lg hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+    <a href="index.html" class="flex items-center gap-2 text-slate-900 dark:text-white font-heading font-bold text-lg hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
       <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-primary-600 to-indigo-500 flex items-center justify-center text-white shadow-sm">
         <i data-lucide="file-text" class="w-4 h-4"></i>
       </div>
@@ -72,13 +72,13 @@
       <div class="relative bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-3xl p-8 sm:p-10 border border-slate-200/80 dark:border-slate-800/80 shadow-xl shadow-slate-200/50 dark:shadow-none">
         
         <!-- Error Badge -->
-        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-primary-50 text-primary-700 dark:bg-primary-950/60 dark:text-primary-300 border border-primary-200 dark:border-primary-800/60 mb-6">
-          <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-primary-600 dark:text-primary-400"></i>
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60 mb-6">
+          <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-rose-600 dark:text-rose-400"></i>
           <span>Помилка 404</span>
         </div>
 
         <!-- Big 404 Typography -->
-        <h1 class="text-7xl sm:text-8xl font-black font-heading tracking-tight bg-gradient-to-r from-primary-600 via-indigo-600 to-emerald-500 bg-clip-text text-transparent select-none">
+        <h1 class="text-7xl sm:text-8xl font-black font-heading tracking-tight bg-gradient-to-r from-primary-600 via-indigo-600 to-rose-500 bg-clip-text text-transparent select-none">
           404
         </h1>
 
@@ -90,11 +90,19 @@
           Схоже, адреса була введена з помилкою або запитувана сторінка була переміщена чи видалена.
         </p>
 
+        <!-- Dynamic reason banner (if redirected from error) -->
+        <div id="error-details" class="hidden mt-4 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-300 text-left">
+          <span class="font-semibold text-rose-600 dark:text-rose-400 flex items-center gap-1 mb-1">
+            <i data-lucide="info" class="w-3.5 h-3.5"></i> Деталі запиту:
+          </span>
+          <span id="error-reason" class="font-mono break-all text-[11px]"></span>
+        </div>
+
         <!-- Action Buttons -->
         <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-          <a href="/" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-primary-600 hover:bg-primary-700 text-white shadow-md shadow-primary-500/20 hover:shadow-lg transition-all">
+          <a href="index.html" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-primary-600 hover:bg-primary-700 text-white shadow-md shadow-primary-500/20 hover:shadow-lg transition-all">
             <i data-lucide="home" class="w-4 h-4"></i>
-            <span>На головну</span>
+            <span>Повернутися до резюме</span>
           </a>
 
           <button onclick="history.back()" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all">
@@ -109,7 +117,7 @@
 
   <!-- Footer -->
   <footer class="w-full text-center py-6 text-xs text-slate-500 dark:text-slate-500">
-    <p>© 2026 Всі права захищено • <a href="/" class="underline hover:text-slate-700 dark:hover:text-slate-300">Головна</a></p>
+    <p>© 2026 Всі права захищено • <a href="index.html" class="underline hover:text-slate-700 dark:hover:text-slate-300">Головна (Резюме)</a></p>
   </footer>
 
   <script>
@@ -129,7 +137,22 @@
       lucide.createIcons();
     }
 
-    document.addEventListener('DOMContentLoaded', initTheme);
+    // Check if error reason or referrer was passed
+    function checkErrorParams() {
+      const params = new URLSearchParams(window.location.search);
+      const reason = params.get('reason') || params.get('from');
+      if (reason) {
+        const detailsEl = document.getElementById('error-details');
+        const reasonEl = document.getElementById('error-reason');
+        reasonEl.textContent = reason;
+        detailsEl.classList.remove('hidden');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      checkErrorParams();
+    });
   </script>
 </body>
 </html>
