@@ -49,7 +49,7 @@
 
   <!-- Top Bar -->
   <header class="w-full max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-    <a href="index.html" class="flex items-center gap-2 text-slate-900 dark:text-white font-heading font-bold text-lg hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+    <a href="/" class="flex items-center gap-2 text-slate-900 dark:text-white font-heading font-bold text-lg hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
       <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-primary-600 to-indigo-500 flex items-center justify-center text-white shadow-sm">
         <i data-lucide="file-text" class="w-4 h-4"></i>
       </div>
@@ -100,7 +100,7 @@
 
         <!-- Action Buttons -->
         <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-          <a href="index.html" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-primary-600 hover:bg-primary-700 text-white shadow-md shadow-primary-500/20 hover:shadow-lg transition-all">
+          <a href="/" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-primary-600 hover:bg-primary-700 text-white shadow-md shadow-primary-500/20 hover:shadow-lg transition-all">
             <i data-lucide="home" class="w-4 h-4"></i>
             <span>Повернутися до резюме</span>
           </a>
@@ -117,10 +117,22 @@
 
   <!-- Footer -->
   <footer class="w-full text-center py-6 text-xs text-slate-500 dark:text-slate-500">
-    <p>© 2026 Всі права захищено • <a href="index.html" class="underline hover:text-slate-700 dark:hover:text-slate-300">Головна (Резюме)</a></p>
+    <p>© 2026 Всі права захищено • <a href="/" class="underline hover:text-slate-700 dark:hover:text-slate-300">Головна (Резюме)</a></p>
   </footer>
 
   <script>
+    // Автоматичне видалення розширення .html з адресного рядка
+    (function cleanUrlExtension() {
+      if (window.location.protocol.startsWith('http') && window.location.pathname.endsWith('.html')) {
+        let cleanPath = window.location.pathname.replace(/\.html$/, '');
+        if (cleanPath.endsWith('/index') || cleanPath === 'index') {
+          cleanPath = cleanPath.replace(/\/?index$/, '') || '/';
+        }
+        const cleanUrl = cleanPath + window.location.search + window.location.hash;
+        window.history.replaceState(null, '', cleanUrl);
+      }
+    })();
+
     // Theme Management
     function initTheme() {
       if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
